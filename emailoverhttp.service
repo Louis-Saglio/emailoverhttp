@@ -1,0 +1,14 @@
+[Unit]
+Description=Email over HTTP Service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+ExecStart=/home/ubuntu/emailoverhttp/emailoverhttp
+EnvironmentFile=/etc/emailoverhttp/env
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
