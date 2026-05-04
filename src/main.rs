@@ -8,6 +8,7 @@ use lettre::{
 use serde::Deserialize;
 use std::env;
 use std::net::SocketAddr;
+use tower_http::cors::{Any, CorsLayer};
 
 #[derive(Deserialize)]
 struct EmailRequest {
@@ -26,7 +27,8 @@ async fn main() {
 
     let app = Router::new()
         .route("/send-email", post(send_email_handler))
-        .route("/ping", get(ping));
+        .route("/ping", get(ping))
+        .layer(CorsLayer::new().allow_origin(Any).allow_headers(Any));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     println!("Listening on {}", addr);
