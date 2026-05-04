@@ -1,4 +1,6 @@
+use axum::routing::get;
 use axum::{extract::Form, http::StatusCode, response::IntoResponse, routing::post, Router};
+use lettre::message::Mailbox;
 use lettre::{
     transport::smtp::authentication::Credentials, AsyncSmtpTransport, AsyncTransport, Message,
     Tokio1Executor,
@@ -6,7 +8,6 @@ use lettre::{
 use serde::Deserialize;
 use std::env;
 use std::net::SocketAddr;
-use lettre::message::Mailbox;
 
 #[derive(Deserialize)]
 struct EmailRequest {
@@ -23,7 +24,9 @@ async fn main() {
         .and_then(|p| p.parse::<u16>().ok())
         .unwrap_or(3000);
 
-    let app = Router::new().route("/send-email", post(send_email_handler));
+    let app = Router::new()
+        .route("/send-email", post(send_email_handler))
+        .route("/ping", get(ping));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     println!("Listening on {}", addr);
@@ -31,8 +34,15 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
+async fn ping() -> &'static str {
+    "Pong!"
+}
+
 async fn send_email_handler(Form(payload): Form<EmailRequest>) -> impl IntoResponse {
-    println!("Sending email '{}' from: {}", payload.subject, payload.using);
+    println!(
+        "Sending email '{}' from: {}",
+        payload.subject, payload.using
+    );
     let token_key = format!("{}_TOKEN", payload.using.to_uppercase());
     let user_name_key = format!("{}_SMTP_USERNAME", payload.using.to_uppercase());
 
