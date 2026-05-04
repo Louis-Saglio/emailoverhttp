@@ -1,4 +1,4 @@
-use axum::{extract::Json, http::StatusCode, response::IntoResponse, routing::post, Router};
+use axum::{extract::Form, http::StatusCode, response::IntoResponse, routing::post, Router};
 use lettre::{
     transport::smtp::authentication::Credentials, AsyncSmtpTransport, AsyncTransport, Message,
     Tokio1Executor,
@@ -31,7 +31,7 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn send_email_handler(Json(payload): Json<EmailRequest>) -> impl IntoResponse {
+async fn send_email_handler(Form(payload): Form<EmailRequest>) -> impl IntoResponse {
     println!("Sending email '{}' from: {}", payload.subject, payload.using);
     let token_key = format!("{}_TOKEN", payload.using.to_uppercase());
     let user_name_key = format!("{}_SMTP_USERNAME", payload.using.to_uppercase());
