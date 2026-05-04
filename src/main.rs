@@ -1,5 +1,5 @@
 use axum::routing::get;
-use axum::{extract::Form, http::StatusCode, response::IntoResponse, routing::post, Router};
+use axum::{http::StatusCode, response::IntoResponse, routing::post, Json, Router};
 use lettre::message::Mailbox;
 use lettre::{
     transport::smtp::authentication::Credentials, AsyncSmtpTransport, AsyncTransport, Message,
@@ -38,7 +38,7 @@ async fn ping() -> &'static str {
     "Pong!"
 }
 
-async fn send_email_handler(Form(payload): Form<EmailRequest>) -> impl IntoResponse {
+async fn send_email_handler(Json(payload): Json<EmailRequest>) -> impl IntoResponse {
     println!(
         "Sending email '{}' from: {}",
         payload.subject, payload.using
