@@ -1,0 +1,7 @@
+louissaglio.fr:60001, vibetothrive.tech:60001 {
+    reverse_proxy 127.0.0.1:3001
+    log {
+        output file /home/ubuntu/emailoverhttp/logs/access.log
+        format json
+    }
+}
